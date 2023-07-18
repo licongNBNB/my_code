@@ -155,23 +155,3 @@ plt.title("雷达图示例")
 plt.savefig('plot.png', transparent=True)
 
 plt.show()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
