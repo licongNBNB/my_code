@@ -4,6 +4,9 @@ from sklearn.preprocessing import MinMaxScaler, StandardScaler
 
 # 读取数据
 data = pd.read_excel(r"D:\Study\py\国赛数据集\测试topsis.xlsx")
+# 转置数据，将特征列放在行上
+data_transposed = data.T
+
 data = data.set_index("风景地点")
 
 # 指定每一列的正向化类型
@@ -15,8 +18,7 @@ col_types = {
     'PH值': 'median'
 }
 
-# 转置数据，将特征列放在行上
-data_transposed = data.T
+
 # 标准化每一列
 for col, tp in col_types.items():
     if tp == 'min_max':
