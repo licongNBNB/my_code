@@ -1,20 +1,20 @@
-
-# %%    对列标准化（极大型，极小型，中间型，区间型）
+# %%对列标准化（极大型，极小型，中间型，区间型）
 import numpy as np
 import pandas as pd
 
 # 读取数据
-data = pd.read_csv(r"D:\数学建模\代码课件\正课配套的课件和代码\第12讲.预测模型\代码和例题数据\12.csv")
-data = data.set_index("年份")
-
+data = pd.read_excel(r"./国赛数据集/测试topsis.xlsx")
+data = data.set_index("风景地点")
+# 对行标准化就转置
+# data = data.transpose()
 # 指定每一列的正向化类型
 col_types = {
-    '单产': 'max_min',
-    '种子费': 'max_min',
-    '化肥费': 'max_min',
-    '农药费': 'max_min',
-    '机械费': 'max_min',
-    '灌溉费': 'max_min'
+    '风景': 'max_min',
+    '人文': 'max_min',
+    '拥挤程度': 'min_max',
+    '票价': 'min_max',
+    'PH值': 'median',
+
 }
 
 
@@ -56,3 +56,4 @@ for col, tp in col_types.items():
         data[col] = normalize_median_01(data[col], median)
     else:
         raise ValueError(f"Invalid normalization type for column '{col}'.")
+# data = data.transpose()
