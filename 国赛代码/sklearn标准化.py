@@ -14,6 +14,7 @@ col_types = {
     '票价': 'max_min',
     'PH值': 'median'
 }
+
 # 转置数据，将特征列放在行上
 data_transposed = data.T
 # 标准化每一列
@@ -29,6 +30,7 @@ for col, tp in col_types.items():
         raise ValueError(f"Invalid normalization type for column '{col}'.")
 
     data[[col]] = scaler.fit_transform(data[[col]])
+
 # 将数据转置回原来的形式
 data_normalized = data_transposed.T
 # %%对列标准化
