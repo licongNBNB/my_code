@@ -1,0 +1,1 @@
+result = data.groupby("层数")["x/m", "y/m", "z/m"].mean()

@@ -18,11 +18,13 @@ from matplotlib import pyplot as plt
 # y0 = y1 + (x0 - x1) * (y2 - y1) / (x2 - x1)
 
 # 缺失值的填充可能会引入噪声和偏差
-data = pd.read_csv(r"C:\Users\聪\Desktop\新建文件夹\新数据集\附件1：污染物浓度数据.csv")
-data = data.drop('年', axis=1)
-data = data.drop('月', axis=1)
-data = data.drop('日', axis=1)
-data = data.drop('质量等级', axis=1)
+data = pd.read_excel(r"C:\Users\25800\Desktop\project\my_code\国赛数据集\1.xlsx", sheet_name=0)
+data['层数'].fillna(method='ffill', inplace=True)
+data = data.set_index("层数")
+# data = data.drop('年', axis=1)
+# data = data.drop('月', axis=1)
+# data = data.drop('日', axis=1)
+# data = data.drop('质量等级', axis=1)
 
 
 # 定义异常值处理函数
@@ -32,25 +34,39 @@ def handle_outliers(column):
     IQR = Q3 - Q1
     threshold = 1.5 * IQR
     column[(column < Q1 - threshold) | (column > Q3 + threshold)] = np.nan
+# 定义异常值处理函数，并返回处理后的异常值数量
+def handle_outliers(column):
+    Q1 = np.percentile(column, 25)
+    Q3 = np.percentile(column, 75)
+    IQR = Q3 - Q1
+    threshold = 1.5 * IQR
+    outliers_count = ((column < Q1 - threshold) | (column > Q3 + threshold)).sum()
+    column[(column < Q1 - threshold) | (column > Q3 + threshold)] = np.nan
+    return outliers_count
+
+# 对所有列进行异常值处理，并统计异常值数量
+outliers_count_total = 0
+for col in data.columns:
+    outliers_count_total += handle_outliers(data[col])
+
+
+# 输出异常值数量
+print("处理后的异常值数量：", outliers_count_total)
 
 
 # 对所有列进行异常值处理
 for col in data.columns:
     handle_outliers(data[col])
 
-# 输出处理后的数据
-print(data.head())
 
 # 使用线性插值进行缺失值处理
-data = data.interpolate(method='linear', axis=0)
+data = data.interpolate(method='slinear', axis=0)
 
-# 输出处理后的数据
-print(data.head())
 
 # 绘制箱型图
-fig, axs = plt.subplots(nrows=2, ncols=2, figsize=(8, 8), dpi=150)
+fig, axs = plt.subplots(nrows=1, ncols=3, figsize=(12, 6), dpi=150)  # 调整figsize适应三张图
 axs = axs.ravel()
-for i, col in enumerate(['PM10', 'O3', 'SO2', 'PM2.5']):
+for i, col in enumerate(['x/m', 'y/m', 'z/m']):
     axs[i].boxplot(data[col].dropna().values, sym='k.')
     axs[i].set_title(col, fontsize=10)
     axs[i].set_ylabel('Concentration', fontsize=8)
@@ -67,4 +83,8 @@ for i, col in enumerate(['PM10', 'O3', 'SO2', 'PM2.5']):
 
 # 保存图片并设置背景透明
 fig.savefig('boxplot.png', bbox_inches='tight', pad_inches=0, format='png')
+
+# 展示生成的三张图
+plt.show()
+
 description = data.describe()
